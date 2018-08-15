@@ -1,17 +1,43 @@
 <div class="container">
-    
-    <form class="text-center" action="/greetings/" method="get">
-        <input class="pl-5 pr-5 pb-3 m-3 input" type="text" placeholder="Enter Your name">
-        <div class="w-100"></div>
-        <input class=" btn btn-primary mb-5" type="submit" value="Greet me">
-    </form>
+    <div class="row">
+        <div class="col-4"></div>
+        <div class="col-4">
+             <form class="text-center" action="/greetings/" method="post">
+                <input class="pl-5 pr-5 pb-3 m-3 input text-center " name="name" type="text" placeholder="Enter Your name...">
+                <div class="w-100"></div>
+                <input class=" btn btn-primary mb-5" type="submit" value="Greet me">
+                <div class="w-100"></div>
+                <div class="row text-center">
+                    <div class="col">
+                        <input type="radio" name="languageSelect" value="Molo">
+                        <p>Xhosa</p> 
+                    </div>
+                    <div class="col">
+                        <input type="radio" name="languageSelect" value="Hello">
+                        <p>English</p> 
+                    </div>
+                    <div class="col">
+                        <input type="radio" name="languageSelect" value="Kon'nichiwa">
+                        <p>Japaneese</p>  
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-4">
+            <h4 class="text-success">Users so far: {{counter}}</h4>
+        </div>
+    </div>
+   
 
     <div class="row">
         <div class="col-3"></div>
          <div class="col-6 align-center">
-            <a href="/greetings/link">
-                <h3 class="inline text-center text-primary bg-dark display">{{message}}</h3>
-            </a>
+            {{#if flag}}
+                <h3 class="inline text-center text-primary display">{{message}}</h3>
+            {{else}}
+                <h3 class="text-warning text-center">{{namePlease}}</h3>
+            {{/if}}
         </div>
         <div class="col-3"></div>
     </div>
