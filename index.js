@@ -24,11 +24,12 @@ app.get('/', function(req, res){
 app.post('/greetings/', function(req, res){
     let input = req.body.name;
     let language = req.body.languageSelect;
-    let flag = Igreet.checked(input);
-    let counter = Igreet.getCount();
-    if(language === undefined){
-        flag = false;
+    
+    if(language !== undefined){
+        var flag = Igreet.checked(input);
+        
     }
+    var counter = Igreet.getCount();
     let message = language +", "+ input;
     let namePlease = "Please enter your name and select a language";
     res.render('home',{flag,message,namePlease, counter});
