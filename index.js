@@ -11,9 +11,10 @@ const app = express();
 app.use(express.static('public'));
 
 app.use(bodyParser.urlencoded({ extended: false }))
-
 // parse application/json
 app.use(bodyParser.json());
+app.engine('handlebars', handle({defaultLayout: 'main'}));
+app.set('view engine', 'handlebars');
 
 app.use(session({
     secret : "<add a secret string here>",
@@ -24,9 +25,6 @@ app.use(session({
 // initialise the flash middleware
 app.use(flash());
 
-app.engine('handlebars', handle({defaultLayout: 'main'}));
-app.set('view engine', 'handlebars');
-
 app.get('/', function(req, res){
     let counter = Igreet.getCount();
     res.render('home', {counter});
@@ -36,8 +34,7 @@ app.get('/', function(req, res){
 app.post('/greetings/', function(req, res){
     let input = req.body.name;
     let language = req.body.languageSelect;
-    
-    if(language !== undefined){
+    if(language !== undefined && input !== ''){
         var flag = Igreet.checked(input);
     }
     var counter = Igreet.getCount();
@@ -55,10 +52,6 @@ app.get('/greetings/:name', function(req, res){
     res.render('home',{flag, input, message, counter});
 })
 
-app.get('/greetings', function (req, res) {
-    req.flash('info', 'Flash Message Added');
-    res.redirect('/');
-});
 
 
 const PORT = process.env.PORT || 2018;
