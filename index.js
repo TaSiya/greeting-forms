@@ -1,14 +1,34 @@
+'use strict';
 const express = require('express');
 const flash = require('express-flash');
 const session = require('express-session');
 const handle = require('express-handlebars');
 const bodyParser = require('body-parser');
+const pg = require("pg");
 const greet = require('./greet');
+ 
 
 var Igreet = greet();
 const app = express();
+const Pool = pg.Pool;
 
-app.use(express.static('public'));
+app.use(express.static(__dirname + 'public'));
+
+let useSSL = false;
+let local = process.env.LOCAL || false;
+
+if (process.env.DATABASE_URL && !local){
+    useSSL = true;
+}
+
+const connectionString = process.env.DATABASE_URL || 'postgresql://tasiya:#B712#@localhost:2018/users';
+
+const pool = new Pool({
+    connectionString,
+    ssl : useSSL
+  });
+
+
 
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
@@ -16,14 +36,7 @@ app.use(bodyParser.json());
 app.engine('handlebars', handle({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
-app.use(session({
-    secret : "<add a secret string here>",
-    resave: false,
-    saveUninitialized: true
-  }));
 
-// initialise the flash middleware
-app.use(flash());
 
 app.get('/', function(req, res){
     let counter = Igreet.getCount();
