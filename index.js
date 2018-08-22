@@ -33,7 +33,7 @@ app.set('view engine', 'handlebars');
 
 app.get('/', async function (req, res) {
     try {
-        let count = await pool.query('select count(*) from users');
+        let count = await pool.query('select count(DISTINCT users_greeted) FROM users');
         let counter = count.rows[0].count;
         console.log();
         res.render('home', {counter});
@@ -51,7 +51,8 @@ app.post('/greetings/', async function (req, res) {
         var flag = Igreet.checked(input);
         pool.query('insert into users (users_greeted, user_language) values ($1,$2)', [input, language]);
     }
-    var counter = pool.query('select count(*) from users');
+    var count = await pool.query('select count(DISTINCT users_greeted) from users');
+    let counter = count.rows[0].count;
     let message = language + ', ' + input;
     let namePlease = 'Please enter your name and select a language';
     res.render('home', {flag, message, namePlease, counter});
@@ -68,9 +69,10 @@ app.get('/greetings/:name', function (req, res) {
 
 app.get('/greeted', async function (req, res) {
     try {
-        let allUsers = await pool.query('select * from users');
+        let allUsers = await pool.query('select DISTINCT  from users');
         console.log(allUsers.rows);
-        res.send(allUsers.rows);
+        let database = allUsers.rows;
+        res.render('greeted', {database});
     } catch (err) {
         res.send(err.stack);
     }
