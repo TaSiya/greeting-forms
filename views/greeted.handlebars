@@ -1,19 +1,22 @@
 <div class="row">
-    <h2 color='text-secondary text-center'>Greeted users</h2>
+    
+    <a href="/" class='btn btn btn-primary text-center'>Take me home</a>
     <table class="table table-hover">
   <thead>
     <tr>
-      <th scope="col">Id</th>
       <th scope="col">Name</th>
       <th scope="col">Language</th>
+      <th scope="col">Greeted times</th>
+      <th scope="col">counter links</th>
     </tr>
   </thead>
   <tbody>
       {{#each database}}
     <tr>
-      <th scope="row">{{id}}</th>
       <td>{{users_greeted}}</td>
       <td>{{user_language}}</td>
+      <td>{{counter}}</td>
+      <td><a href="/counter/{{users_greeted}}" class="btn btn-light ">link</a></td>
     </tr>
     {{/each}}
   </tbody>

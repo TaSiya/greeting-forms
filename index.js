@@ -35,7 +35,6 @@ app.get('/', async function (req, res) {
     try {
         let count = await pool.query('select count(DISTINCT users_greeted) FROM users');
         let counter = count.rows[0].count;
-        console.log();
         res.render('home', {counter});
     } catch (err) {
         
@@ -44,18 +43,61 @@ app.get('/', async function (req, res) {
 });
 
 // Greet the user using the form field
-app.post('/greetings/', async function (req, res) {
-    let input = req.body.name;
-    let language = req.body.languageSelect;
-    if (language !== undefined && input !== '') {
-        var flag = Igreet.checked(input);
-        pool.query('insert into users (users_greeted, user_language) values ($1,$2)', [input, language]);
+app.post('/greetings', async function (req, res) {
+    // let input = req.body.name;
+    // let language = req.body.languageSelect;
+    // let userData = await pool.query('select * from users where users_greeted = $1', [input]);
+    // console.log(userData.rows[0]);
+    // if (userData.rows[0] === '' || userData.rows[0]) {
+
+    // }
+    // if (language !== undefined && input !== '') {
+    //     var flag = Igreet.checked(input);
+    //     pool.query('insert into users (users_greeted, user_language) values ($1,$2)', [input, language]);
+    // }
+    // var count = await pool.query('select count(DISTINCT users_greeted) from users');
+    // let counter = count.rows[0].count;
+    // let message = language + ', ' + input;
+    // let namePlease = 'Please enter your name and select a language';
+
+
+        
+
+
+    try {
+        var flag;
+        let input = req.body.name;
+        let language = req.body.languageSelect;
+        if (input !== '' && language !== undefined) {
+            console.log('here');
+            let user = await pool.query('SELECT * FROM users ');
+            console.log(user.rows[2]);
+            let found = false;
+            for (var i = 0; i < user.rows.length; i++) {
+                if (user.rows[i].users_greeted === input) {
+                    found = true;
+                    let incrementCount = user.rows[i].counter + 1;
+                    let id = user.rows[i].id;
+                    await pool.query('UPDATE users SET user_language = $1, counter = $2  WHERE id=$3', [language, incrementCount, id]);
+                }
+            }
+            if (!found) {
+                await pool.query('INSERT INTO users (users_greeted, user_language, counter) values ($1, $2,$3)', [input, language, 1]);  
+            } 
+            flag = Igreet.checked(input);
+        }
+        var count = await pool.query('select count(DISTINCT users_greeted) from users');
+        let counter = count.rows[0].count;
+        
+        let message = language + ', ' + input;
+        let namePlease = 'Please enter your name and select a language';
+
+        res.render('home', {flag: true, message, namePlease, counter});
+    } catch (err) {
+
     }
-    var count = await pool.query('select count(DISTINCT users_greeted) from users');
-    let counter = count.rows[0].count;
-    let message = language + ', ' + input;
-    let namePlease = 'Please enter your name and select a language';
-    res.render('home', {flag, message, namePlease, counter});
+
+    
 });
 
 // Allows the user to be greeted using the URL. But the language is not set, so i use default "Good day"
@@ -69,13 +111,27 @@ app.get('/greetings/:name', function (req, res) {
 
 app.get('/greeted', async function (req, res) {
     try {
-        let allUsers = await pool.query('select DISTINCT  from users');
-        console.log(allUsers.rows);
+        let allUsers = await pool.query('select *  from users');
         let database = allUsers.rows;
         res.render('greeted', {database});
     } catch (err) {
         res.send(err.stack);
     }
+});
+
+app.get('/counter/:username', async function (req, res) {
+    let username = req.params.username;
+    let user = await pool.query('SELECT * FROM users ');
+    let found = false;
+    let greetedUser = 0;
+        for (var i = 0; i < user.rows.length; i++) {
+            if (user.rows[i].users_greeted === username) {
+                found = true;
+                greetedUser = await pool.query('SELECT counter FROM users WHERE users_greeted = $1', [username]);
+                greetedUser = greetedUser.rows[0].counter;
+            }
+        }
+    res.render('counter', {username, greetedUser});
 });
 
 const PORT = process.env.PORT || 2018;

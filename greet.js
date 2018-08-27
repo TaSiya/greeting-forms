@@ -1,8 +1,8 @@
-module.exports = function Greeting(){
+module.exports = function Greeting () {
     var namesGreeted = {};
-    var counter = 0 ;
+    var counter = 0;
   
-    function checking(value){
+    function checking (value) {
       let flag = false;
        if(value !== ''){
           if(namesGreeted[value] === undefined){
