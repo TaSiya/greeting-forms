@@ -1,4 +1,4 @@
-drop table if EXISTS users, count_greet;
+drop table if EXISTS users;
 
 create table users(
     id serial not null primary key,
@@ -6,8 +6,3 @@ create table users(
     user_language text not null
 );
 
-create table count_greet(
-    id serial not null primary key,
-    count int not null,
-    foreign key (id) references users(id)
-);
