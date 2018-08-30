@@ -42,6 +42,16 @@ app.get('/', async function (req, res) {
     }
 });
 
+// reset the database
+app.get('/reset', async function (req, res, next) {
+    try {
+        await pool.query('delete from users');
+        res.redirect('/');
+    } catch (err) {
+        next(err);
+    }
+})
+
 // Greet the user using the form field
 app.post('/greetings', async function (req, res) {
     try {
