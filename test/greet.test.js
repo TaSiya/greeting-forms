@@ -15,6 +15,7 @@ describe('Greeting App test for both from and back ends', async function () {
         await pool.query('delete from users');
     });
     it('should return length 0 with no data', async function () {
+        // each test must have its own pool.
         const greetInstance = greetService(pool);    
         let result = await greetInstance.allData();
         assert.strictEqual(result.length, 0);
