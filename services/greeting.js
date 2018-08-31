@@ -25,7 +25,7 @@ module.exports = function (pool) {
     async function incrementCount (name, language) {
         let currentUser = await pool.query('SELECT * FROM users WHERE users_greeted = $1', [name]);
         let newCount = currentUser.rows[0].counter + 1;
-       await update(language, newCount, currentUser.rows[0].id);
+        await update(language, newCount, currentUser.rows[0].id);
     }
     async function reset () {
         await pool.query('delete from users');
