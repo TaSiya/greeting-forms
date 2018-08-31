@@ -5,9 +5,7 @@ const session = require('express-session');
 const handle = require('express-handlebars');
 const bodyParser = require('body-parser');
 const pg = require('pg');
-const greet = require('./greet');
 
-var Igreet = greet();
 const app = express();
 const Pool = pg.Pool;
 
@@ -34,11 +32,11 @@ app.set('view engine', 'handlebars');
 
 app.get('/', async function (req, res) {
     try {
-        let count = await pool.query('select count(DISTINCT users_greeted) FROM users');
+        let count = await pool.query('select count(*) FROM users');
         let counter = count.rows[0].count;
         res.render('home', {counter});
     } catch (err) {
-
+        
     }
 });
 
@@ -72,7 +70,6 @@ app.post('/greetings', async function (req, res) {
             if (!found) {
                 await pool.query('INSERT INTO users (users_greeted, user_language, counter) values ($1, $2,$3)', [input, language, 1]);
             }
-            // flag = Igreet.checked(input);
             flag = true;
         }
         var count = await pool.query('select count(DISTINCT users_greeted) from users');
@@ -107,7 +104,6 @@ app.get('/greetings/:name/:language', async function (req, res) {
             if (!found) {
                 await pool.query('INSERT INTO users (users_greeted, user_language, counter) values ($1, $2,$3)', [input, language, 1]);
             }
-            // flag = Igreet.checked(input);
             flag = true;
         }
         var count = await pool.query('select count(DISTINCT users_greeted) from users');

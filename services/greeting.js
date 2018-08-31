@@ -4,43 +4,47 @@ module.exports = function (pool) {
         return data.rows;
     }
     async function selectSpecific (user) {
-        let userData = await pool.query('select * from users WHERE users_greeted = $1', [user]);
-        return userData.rows[0];
+        let userData = await pool.query('select * from users WHERE users_greeted = $1;', [user]);
+        return userData.rows;
     }
     async function selectById (id) {
         let user = await pool.query('SELECT * FROM users WHERE id=$1', [id]);
-        return user.rows[0];
+        return user.rows;
+    }
+    async function getCounter (name) {
+        let counter = await pool.query('SELECT counter FROM users WHERE users_greeted = $1', [name]);
+        return parseInt(counter.rows[0].counter);
     }
     async function countUsers () {
-        let numberUser = await pool.query('SELECT count(*) FROM users');
-        return numberUser.rows[0];
+        let numberUser = await pool.query('SELECT count(*) FROM users;');
+        return parseInt(numberUser.rows[0].count);
     }
     async function insertData (name, language) {
-        await pool.query('insert into users (users_greeted,user_language,counter) values ($1,$2,$3)', [name, language, 1]);
+        await pool.query('INSERT INTO users (users_greeted,user_language,counter) VALUES ($1,$2,$3);', [name, language, 1]);
     }
-    
     async function incrementCount (name, language) {
-        let currentCount = await pool.query('SELECT counter FROM users WHERE users_greeted = $1', [name]);
-        let newCount = currentCount.rows[0].counter + 1;
-        insertData(name, language, newCount);
+        let currentUser = await pool.query('SELECT * FROM users WHERE users_greeted = $1', [name]);
+        let newCount = currentUser.rows[0].counter + 1;
+       await update(language, newCount, currentUser.rows[0].id);
     }
     async function reset () {
         await pool.query('delete from users');
     }
-    async function update() {
-        await pool.query('UPDATE users SET user_language = $1, counter = $2 WHERE id=$3', []);
+    async function update (language, count, id) {
+        await pool.query('UPDATE users SET user_language = $1, counter = $2 WHERE id=$3', [language, count, id]);
     }
     async function tryingAddUser (name, language) {
-        let allUsers = allData();
+        let allUsers = await allData();
+        
         let found = false;
         for (var i = 0; i < allUsers.length; i++) {
             if (name === allUsers[i].users_greeted) {
-                incrementCount(name, language);
+                await incrementCount(name, language);
                 found = true;
             }
         }
         if (!found) {
-            insertData(name, language);
+            await insertData(name, language);
         }
 
         return found;
@@ -49,6 +53,7 @@ module.exports = function (pool) {
         allData,
         selectSpecific,
         selectById,
+        getCounter,
         countUsers,
         insertData,
         incrementCount,
