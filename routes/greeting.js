@@ -1,11 +1,11 @@
-const greetServices = require('../services/greeting');
+const GreetServices = require('../services/greeting');
 
 module.exports = function (pool) {
-    const greet = greetServices(pool);
+    const Greet = GreetServices(pool);
 
     async function home (req, res) {
         try {
-            let counter = await greet.countUsers();
+            let counter = await Greet.countUsers();
             res.render('home', {counter});
         } catch (err) {
 
@@ -13,10 +13,19 @@ module.exports = function (pool) {
     }
     async function resetRoot (req, res) {
         try {
-            await greet.reset();
+            await Greet.reset();
             res.redirect('/');
         } catch (err) {
             next(err);
+        }
+    }
+    async function remove (req, res) {
+        try {
+            let user = req.params.username;
+            await Greet.removeUser(user);
+            res.redirect('/greeted');
+        } catch (err) {
+
         }
     }
     async function logicPost (req, res) {
@@ -25,10 +34,10 @@ module.exports = function (pool) {
             let input = req.body.name;
             let language = req.body.languageSelect;
             if (input !== '' && language !== undefined) {
-                await greet.tryingAddUser(input, language);
+                await Greet.tryingAddUser(input, language);
                 flag = true;
             }
-            var counter = await greet.countUsers();
+            var counter = await Greet.countUsers();
             let message = language + ', ' + input;
             let namePlease = 'Please enter your name and select a language';
     
@@ -44,10 +53,10 @@ module.exports = function (pool) {
             let input = req.params.name;
             let language = req.params.language;
             if (input !== '' && language !== undefined) {
-                await greet.tryingAddUser(input, language);
+                await Greet.tryingAddUser(input, language);
                 flag = true;
             }
-            var counter = await greet.countUsers();
+            var counter = await Greet.countUsers();
             let message = language + ', ' + input;
             let namePlease = 'Please enter your name and select a language';
     
@@ -58,7 +67,7 @@ module.exports = function (pool) {
     }
     async function dataList (req, res) {
         try {
-            let database = await greet.allData();
+            let database = await Greet.allData();
             res.render('greeted', {database});
         } catch (err) {
 
@@ -67,11 +76,11 @@ module.exports = function (pool) {
     async function counterRoot (req, res) {
         try {
             let username = req.params.username;
-            let user = await greet.allData();
+            let user = await Greet.allData();
             let greetedUser = 0;
             for (var i = 0; i < user.length; i++) {
                 if (user[i].users_greeted === username) {
-                    greetedUser = await greet.getCounter(username);
+                    greetedUser = await Greet.getCounter(username);
                 }
             }
             res.render('counter', {username, greetedUser});
@@ -83,6 +92,7 @@ module.exports = function (pool) {
     return {
         home,
         resetRoot,
+        remove,
         logicPost,
         logicGet,
         dataList,

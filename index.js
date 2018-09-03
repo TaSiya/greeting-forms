@@ -28,7 +28,7 @@ const pool = new Pool({
     ssl: useSSL
 });
 
-const greetRoutes = greetRoute(pool);
+const GreetRoutes = greetRoute(pool);
 
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
@@ -36,17 +36,18 @@ app.use(bodyParser.json());
 app.engine('handlebars', handle({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 //home root
-app.get('/', greetRoutes.home);
+app.get('/', GreetRoutes.home);
 // reset the database
-app.get('/reset', greetRoutes.resetRoot);
+app.get('/reset', GreetRoutes.resetRoot);
+app.get('/remove/:username', GreetRoutes.remove);
 // Greet the user using the form field
-app.post('/greetings', greetRoutes.logicPost);
+app.post('/greetings', GreetRoutes.logicPost);
 // Allows the user to be greeted using the URL. But the language is not set, so i use default "Good day"
-app.get('/greetings/:name/:language', greetRoutes.logicGet);
+app.get('/greetings/:name/:language', GreetRoutes.logicGet);
 //link to all users in the database
-app.get('/greeted', greetRoutes.dataList);
+app.get('/greeted', GreetRoutes.dataList);
 //counter root for each user
-app.get('/counter/:username', greetRoutes.counterRoot);
+app.get('/counter/:username', GreetRoutes.counterRoot);
 //listining port for the app
 const PORT = process.env.PORT || 2018;
 app.listen(PORT, function () {

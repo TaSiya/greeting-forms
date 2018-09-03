@@ -11,6 +11,9 @@ module.exports = function (pool) {
         let user = await pool.query('SELECT * FROM users WHERE id=$1', [id]);
         return user.rows;
     }
+    async function removeUser (name) {
+        await pool.query('delete from users where users_greeted = $1', [name]);
+    }
     async function getCounter (name) {
         let counter = await pool.query('SELECT counter FROM users WHERE users_greeted = $1', [name]);
         return parseInt(counter.rows[0].counter);
@@ -34,25 +37,18 @@ module.exports = function (pool) {
         await pool.query('UPDATE users SET user_language = $1, counter = $2 WHERE id=$3', [language, count, id]);
     }
     async function tryingAddUser (name, language) {
-        let allUsers = await allData();
-        
-        let found = false;
-        for (var i = 0; i < allUsers.length; i++) {
-            if (name === allUsers[i].users_greeted) {
-                await incrementCount(name, language);
-                found = true;
-            }
-        }
-        if (!found) {
+        let allUsers = await selectSpecific(name);
+        if (allUsers.length > 0) {
+            await incrementCount(name, language);
+        } else {
             await insertData(name, language);
         }
-
-        return found;
     }
     return {
         allData,
         selectSpecific,
         selectById,
+        removeUser,
         getCounter,
         countUsers,
         insertData,
