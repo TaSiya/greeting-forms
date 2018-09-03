@@ -1,12 +1,10 @@
+<h4 class="text-success text-center">Users so far: {{counter}}</h4>
 <div class="container">
     <div class="row">
         <div class="col-4"> </div>
         <div class="col-4">
              <form class="text-center" action="/greetings/" method="post">
                 <input class="pl-5 pr-5 pb-3 m-3 input text-center " name="name" type="text" placeholder="Enter Your name...">
-                <div class="w-100"></div>
-                <input class=" btn btn-primary mb-5" type="submit" value="Greet me">
-                <a href="/greeted" class=" btn btn-primary mb-5">To the database </a>
                 <div class="w-100"></div>
                 <div class="row text-center">
                     <div class="col">
@@ -22,11 +20,11 @@
                         <p class="text-secondary">Japaneese</p>  
                     </div>
                 </div>
+                <input class=" btn btn-primary mb-5" type="submit" value="Greet me">
+                <a href="/greeted" class=" btn btn-primary mb-5">To the database </a>
+                <div class="w-100"></div>
+                
             </form>
-        </div>
-
-        <div class="col-4">
-            <h4 class="text-success">Users so far: {{counter}}</h4>
         </div>
     </div>
    
